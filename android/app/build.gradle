@@ -1,0 +1,97 @@
+apply plugin: 'com.android.application'
+
+// Version: VERSION_CODE/VERSION_NAME from CI, otherwise derived from the git history,
+// so every new commit produces an installable update.
+def gitCommitCount = {
+    try {
+        def proc = ['git', 'rev-list', '--count', 'HEAD'].execute(null, rootProject.projectDir)
+        proc.waitFor()
+        return proc.text.trim().toInteger()
+    } catch (ignored) {
+        return 1
+    }
+}
+def appVersionCode = (System.getenv('VERSION_CODE') ?: gitCommitCount().toString()).toInteger()
+// Major.minor from package.json, patch = commit count (e.g. 1.0.7).
+def pkgVersion = new groovy.json.JsonSlurper().parse(new File(rootProject.projectDir.parentFile, 'package.json')).version.tokenize('.')
+def appVersionName = System.getenv('VERSION_NAME') ?: "${pkgVersion[0]}.${pkgVersion[1]}.${appVersionCode}"
+
+// Signing: Android only installs updates signed with the same key. The key never
+// lives in this repo – it is read from ~/.simplearchive/signing.properties (local
+// builds, see README) or from environment variables (GitHub Actions secrets).
+def signingProps = new Properties()
+def signingFile = new File(System.getProperty('user.home'), '.simplearchive/signing.properties')
+if (signingFile.isFile()) signingFile.withInputStream { signingProps.load(it) }
+def keystoreEnv = System.getenv('SIMPLEARCHIVE_KEYSTORE')
+def keystoreFile = keystoreEnv ? new File(keystoreEnv) : (signingProps.storeFile ? new File(signingFile.parentFile, signingProps.storeFile) : null)
+def hasReleaseKey = keystoreFile != null && keystoreFile.isFile()
+
+android {
+    signingConfigs {
+        if (hasReleaseKey) {
+            release {
+                storeFile keystoreFile
+                storePassword System.getenv('SIMPLEARCHIVE_KEYSTORE_PASSWORD') ?: signingProps.storePassword
+                keyAlias System.getenv('SIMPLEARCHIVE_KEY_ALIAS') ?: (signingProps.keyAlias ?: 'simplearchive')
+                keyPassword System.getenv('SIMPLEARCHIVE_KEY_PASSWORD') ?: (System.getenv('SIMPLEARCHIVE_KEYSTORE_PASSWORD') ?: signingProps.keyPassword)
+            }
+        }
+    }
+    namespace = "io.github.tiborszw.simplearchive"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "io.github.tiborszw.simplearchive"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode appVersionCode
+        versionName appVersionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    buildTypes {
+        release {
+            if (hasReleaseKey) {
+                signingConfig signingConfigs.release
+            } else {
+                logger.warn('simpleArchive: kein Signierschlüssel gefunden (~/.simplearchive/signing.properties) – Release-APK bleibt unsigniert.')
+            }
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+    implementation "com.google.android.gms:play-services-auth:21.6.0"
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
