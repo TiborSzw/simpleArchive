@@ -1,7 +1,7 @@
 // Copies of the archive photos in their own album of the phone gallery.
 import { registerPlugin } from '@capacitor/core';
 import { parseLocal } from '../core/dates';
-import { mediaPath } from './media';
+import { cacheWrite, mediaPath } from './media';
 import { isNative } from './platform';
 
 interface GalleryPlugin {
@@ -22,4 +22,11 @@ export async function saveToAlbum(file: string, album: string, fileName: string,
   if (!isNative) return;
   const ms = parseLocal(takenAt).getTime();
   await Gallery.saveToAlbum({ path: mediaPath(file), album, fileName, takenAt: Number.isFinite(ms) ? ms : undefined });
+}
+
+/** Saves a rendered image (e.g. a showcase card) into the album. */
+export async function saveBlobToAlbum(blob: Blob, album: string, fileName: string): Promise<void> {
+  if (!isNative) return;
+  const uri = await cacheWrite(fileName, blob);
+  await Gallery.saveToAlbum({ path: uri, album, fileName, takenAt: Date.now() });
 }

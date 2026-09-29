@@ -1,0 +1,68 @@
+/* Design tokens. Dark "gallery" is the default; light "paper" via [data-theme=light]. */
+:root {
+  color-scheme: dark;
+  --bg: #100e0b;
+  --surface: #1b1916;
+  --surface-2: #25221e;
+  --surface-3: #312d27;
+  --line: #3b362f;
+  --text: #f2ece2;
+  --muted: #a89f91;
+  --faint: #70685d;
+  --accent: #d9a441;
+  --accent-strong: #ecc26a;
+  --accent-ink: #1c1509;
+  --accent-soft: rgba(217, 164, 65, 0.16);
+  --good: #8cc084;
+  --bad: #ec7f6b;
+  --fav: #f0677a;
+  --overlay: rgba(6, 5, 4, 0.62);
+  --glass: rgba(27, 25, 22, 0.82);
+
+  /* Painting progress – one hue, dim → bright (validated ordinal ramp on the dark surface). */
+  --s-unpainted: #5f5445;
+  --s-primed: #86704f;
+  --s-wip: #b58d4c;
+  --s-done: #e6b95a;
+
+  --font-display: 'Cinzel', 'Times New Roman', serif;
+  --font-ui: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --r: 16px;
+  --r-sm: 11px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.25);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --kb: 0px;
+  --nav-h: 68px;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f6f2ea;
+  --surface: #fffdf9;
+  --surface-2: #f1ece3;
+  --surface-3: #e7e0d4;
+  --line: #ddd5c8;
+  --text: #221c15;
+  --muted: #6e6558;
+  --faint: #a1988a;
+  --accent: #9a6b17;
+  --accent-strong: #7b530c;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(154, 107, 23, 0.12);
+  --good: #3d7a37;
+  --bad: #b8432f;
+  --fav: #d23c52;
+  --overlay: rgba(30, 24, 16, 0.45);
+  --glass: rgba(255, 253, 249, 0.86);
+
+  /* validated ordinal ramp on the light surface: light → dark */
+  --s-unpainted: #c9ae7a;
+  --s-primed: #b08743;
+  --s-wip: #8c6120;
+  --s-done: #5e3f0c;
+
+  --shadow: 0 10px 30px rgba(60, 45, 25, 0.16);
+  --shadow-sm: 0 2px 10px rgba(60, 45, 25, 0.1);
+}

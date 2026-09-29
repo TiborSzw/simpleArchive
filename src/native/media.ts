@@ -147,6 +147,8 @@ export async function mediaUrl(name: string): Promise<string> {
 /** Copies a media file into the cache under a friendly name (for sharing); returns its URI. */
 export async function cacheCopy(name: string, friendlyName: string): Promise<string> {
   if (!isNative) throw new Error('Nur in der App.');
+  await Filesystem.mkdir({ directory: Directory.Cache, path: 'share', recursive: true }).catch(() => undefined);
+  await Filesystem.deleteFile({ directory: Directory.Cache, path: `share/${friendlyName}` }).catch(() => undefined);
   await Filesystem.copy({ from: `media/${subdir(name)}/${name}`, directory: Directory.Data, to: `share/${friendlyName}`, toDirectory: Directory.Cache });
   return (await Filesystem.getUri({ directory: Directory.Cache, path: `share/${friendlyName}` })).uri;
 }

@@ -58,7 +58,9 @@ export function createItem(a: Archive, draft: Partial<ItemDraft>, now: string): 
 
 export type ItemPatch = Partial<Omit<Item, 'id' | 'createdAt' | 'updatedAt'>>;
 
-export function updateItem(a: Archive, id: string, patch: ItemPatch, now: string): Archive {
+export function updateItem(a: Archive, id: string, rawPatch: ItemPatch, now: string): Archive {
+  // Keys set to undefined mean "unchanged", not "clear".
+  const patch = Object.fromEntries(Object.entries(rawPatch).filter(([, v]) => v !== undefined)) as ItemPatch;
   let found = false;
   const items = a.items.map((it) => {
     if (it.id !== id) return it;

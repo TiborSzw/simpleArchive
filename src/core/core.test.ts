@@ -84,6 +84,15 @@ describe('archive', () => {
     expect(a.updatedAt).toBe(T2);
   });
 
+  it('treats undefined patch values as unchanged', () => {
+    let { a, tower } = sample();
+    a = updateItem(a, tower, { name: 'Großer Wachturm', finishedAt: undefined, notes: undefined }, T2);
+    const t = a.items.find((it) => it.id === tower)!;
+    expect(t.finishedAt).toBe(T1);
+    expect(t.notes).toBe('');
+    expect(t.name).toBe('Großer Wachturm');
+  });
+
   it('records the stage of photos and picks covers', () => {
     let { a, captain } = sample();
     const photos = photosOf(a, captain);
@@ -246,6 +255,7 @@ describe('stats', () => {
 describe('dates', () => {
   it('labels months and relative times in German', () => {
     expect(monthLabel('2026-03')).toBe('März 2026');
+    expect(monthLabel('2027-01')).toBe('Jänner 2027'); // österreichisch
     expect(dateLabel('2026-09-29T14:00:00')).toBe('29. September 2026');
     expect(relativeLabel('2026-09-29T08:00:00', '2026-09-29T20:00:00')).toBe('heute');
     expect(relativeLabel('2026-09-28T23:00:00', '2026-09-29T01:00:00')).toBe('gestern');
