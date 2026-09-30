@@ -22,8 +22,9 @@ npm run android:apk             # signierte APK → android/app/build/outputs/ap
 ## Signierschlüssel (nie ins Repo!)
 
 - Lokal: `~/.simplearchive/simplearchive.jks` + `~/.simplearchive/signing.properties` (storeFile, storePassword, keyAlias, keyPassword). `android/app/build.gradle` liest sie automatisch.
-- CI: Secrets `SIMPLEARCHIVE_KEYSTORE_BASE64` und `SIMPLEARCHIVE_KEYSTORE_PASSWORD`.
-- SHA-1 (für den Google-OAuth-Client): `54:1F:8D:3B:84:8F:79:FD:6E:91:DA:5D:B5:78:C4:E2:E2:51:8C:C3`.
+- CI: Secrets `SIMPLEARCHIVE_KEYSTORE_BASE64` und `SIMPLEARCHIVE_KEYSTORE_PASSWORD` (gesetzt am 2026-09-30 vom Linux-Rechner aus).
+- **Schlüssel seit 2026-09-30 neu**, liegt auf dem Linux-Rechner des Nutzers unter `~/.simplearchive/`. Der erste Schlüssel (SHA-1 54:1F:8D…, Version 1.0.2) existierte nur in einer anderen Sitzung und ist nicht mehr verfügbar – die Secrets nicht mehr ersetzen.
+- SHA-1 (für den Google-OAuth-Client): `9E:4D:D9:B9:3E:7F:5B:60:6C:D5:66:CB:7F:CA:3D:57:9E:58:97:53`.
 - `.gitignore` sperrt `*.jks`, `*.keystore`, `signing.properties`.
 
 ## Nicht kaputt machen

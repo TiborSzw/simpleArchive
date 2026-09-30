@@ -65,7 +65,7 @@ Die App fragt nur nach der Berechtigung `drive.file`: Sie sieht ausschließlich 
 3. *APIs & Dienste → OAuth-Zustimmungsbildschirm* → Typ **Extern**, App-Name „simpleArchive“, deine E-Mail. Bereich `…/auth/drive.file` hinzufügen (nicht vertraulich, keine Prüfung durch Google nötig). Dann **App veröffentlichen** (oder dich als Testnutzer eintragen).
 4. *APIs & Dienste → Anmeldedaten → Anmeldedaten erstellen → OAuth-Client-ID* → Typ **Android**:
    - Paketname: `io.github.tiborszw.simplearchive`
-   - SHA-1 des Release-Schlüssels: `54:1F:8D:3B:84:8F:79:FD:6E:91:DA:5D:B5:78:C4:E2:E2:51:8C:C3`
+   - SHA-1 des Release-Schlüssels: `9E:4D:D9:B9:3E:7F:5B:60:6C:D5:66:CB:7F:CA:3D:57:9E:58:97:53`
 5. In der App *Einstellungen → Google Drive → Mit Google verbinden*.
 
 Ohne diesen Schritt meldet die App „Google Drive ist für diese App noch nicht freigeschaltet“. Für Google Drive **ohne** Einrichtung: **Als ZIP speichern** und im Speichern-Dialog „Drive“ wählen.
