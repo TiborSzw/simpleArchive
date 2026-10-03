@@ -21,8 +21,14 @@ interface View {
 
 const MAX_SCALE = 5;
 
-/** Pinch/pan/double-tap zoom and swipe navigation for one photo at a time. */
-function useGestures(onSwipe: (dir: -1 | 1) => void, onTap: () => void, resetKey: string) {
+/**
+ * Pinch/pan/double-tap zoom and swipe navigation for one photo at a time.
+ * `can` says whether there is a photo before/after – at the ends the swipe only
+ * gives a little and springs back (otherwise the track stayed on an empty slide).
+ */
+function useGestures(onSwipe: (dir: -1 | 1) => void, onTap: () => void, resetKey: string, can: { prev: boolean; next: boolean }) {
+  const canRef = useRef(can);
+  canRef.current = can;
   const stage = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
   const img = useRef<HTMLDivElement>(null);
@@ -135,8 +141,9 @@ function useGestures(onSwipe: (dir: -1 | 1) => void, onTap: () => void, resetKey
       view.current = clamp({ ...g.startView, x: g.startView.x + dx, y: g.startView.y + dy });
       apply();
     } else if (Math.abs(dx) > Math.abs(dy)) {
-      g.swipe = dx;
-      setSwipe(dx);
+      const blocked = (dx < 0 && !canRef.current.next) || (dx > 0 && !canRef.current.prev);
+      g.swipe = blocked ? 0 : dx;
+      setSwipe(blocked ? dx * 0.2 : dx);
     }
   };
 
@@ -152,6 +159,7 @@ function useGestures(onSwipe: (dir: -1 | 1) => void, onTap: () => void, resetKey
     }
     gesture.current = null;
     setZoomed(view.current.scale > 1.01);
+    if (view.current.scale <= 1.01 && !g.swipe) setSwipe(0, true);
     if (view.current.scale <= 1.01 && g.swipe) {
       const w = stage.current?.clientWidth ?? 360;
       const fast = Math.abs(g.swipe) / Math.max(1, Date.now() - g.t) > 0.5;
@@ -267,7 +275,7 @@ export function PhotoViewer({ photoIds, index }: { photoIds: string[]; index: nu
     if (next < 0 || next >= photos.length) return;
     replaceTop({ type: 'viewer', photoIds: photos.map((p) => p.id), index: next });
   };
-  const g = useGestures((dir) => go(dir), () => setChrome((c) => !c), photo?.id ?? '');
+  const g = useGestures((dir) => go(dir), () => setChrome((c) => !c), photo?.id ?? '', { prev: i > 0, next: i < photos.length - 1 });
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

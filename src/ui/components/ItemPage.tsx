@@ -166,7 +166,7 @@ export function ItemPage({ id }: { id: string }) {
       {photos.length > 0 && (
         <section class="section">
           <h2 class="section-title">
-            Verlauf <span class="muted">{photos.length}</span>
+            Fotos <span class="muted">{photos.length}</span>
           </h2>
           <div class="progress-strip">
             {photos.map((p) => (
