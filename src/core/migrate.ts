@@ -30,6 +30,7 @@ function item(v: unknown, now: string): Item | null {
     startedAt: strOrNull(v.startedAt),
     finishedAt: status === 'done' ? (strOrNull(v.finishedAt) ?? str(v.updatedAt, now)) : null,
     deletedAt: strOrNull(v.deletedAt),
+    ...(typeof v.ref === 'string' && v.ref ? { ref: v.ref } : {}),
   };
 }
 

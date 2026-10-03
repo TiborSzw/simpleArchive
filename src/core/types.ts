@@ -28,6 +28,8 @@ export interface Item {
   finishedAt: string | null;
   /** In the trash since … (null = alive). */
   deletedAt: string | null;
+  /** Link to the same thing in another simple* app, e.g. "simplearmy:termagants". */
+  ref?: string;
 }
 
 export interface Photo {
@@ -97,6 +99,7 @@ export interface ItemDraft {
   favorite: boolean;
   notes: string;
   models: number;
+  ref?: string;
 }
 
 /** A processed image, ready to be attached to an item. */

@@ -51,6 +51,7 @@ export function createItem(a: Archive, draft: Partial<ItemDraft>, now: string): 
     startedAt: null,
     finishedAt: null,
     deletedAt: null,
+    ...(draft.ref ? { ref: draft.ref } : {}),
   };
   const item = applyStatus(base, draft.status ?? 'unpainted', now);
   return { archive: touch({ ...a, items: [item, ...a.items] }, now), item };

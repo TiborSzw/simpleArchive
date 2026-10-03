@@ -7,6 +7,7 @@ import type { Status } from '../../core/types';
 import { haptic } from '../../native/platform';
 import { sharePhotos } from '../../native/share';
 import { galleryFilter, galleryView } from './Gallery';
+import { armyUnit } from '../links';
 import { Icon } from '../icons';
 import { dropScreensFor, openSheet, push, setTab } from '../nav';
 import { archive, mutate, toast, useStore } from '../store';
@@ -218,6 +219,18 @@ export function ItemPage({ id }: { id: string }) {
                   photos.map((p, i) => ({ file: p.file, name: photos.length > 1 ? `${title} ${i + 1}` : title })),
                   title,
                 ).catch(() => undefined);
+              }}
+            />
+          )}
+          {armyUnit(item.ref) && cover && (
+            <SheetAction
+              icon="share"
+              label="Als Einheitenfoto an simpleArmy"
+              hint="Titelbild teilen – im Teilen-Menü simpleArmy wählen"
+              onClick={() => {
+                setMenu(false);
+                // simpleArmy erkennt die Einheit am Text und ordnet das Foto ohne Nachfrage zu
+                void sharePhotos([{ file: cover.file, name: title }], title, `simplearmy:unit=${armyUnit(item.ref)}`).catch(() => undefined);
               }}
             />
           )}

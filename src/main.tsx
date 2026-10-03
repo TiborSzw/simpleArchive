@@ -7,6 +7,7 @@ import { render } from 'preact';
 import { isNative, onAppPause, onAppResume, onBackButton, onConnectionChange } from './native/platform';
 import { App } from './ui/App';
 import { autoBackup, initCloud, scheduleAutoBackup } from './ui/cloud';
+import { initLinks } from './ui/links';
 import { handleBackButton } from './ui/nav';
 import { emergencySave, flushSave, initStorage, onArchiveChange } from './ui/store';
 
@@ -29,6 +30,7 @@ async function boot() {
     console.error('Start fehlgeschlagen', e);
   }
   render(<App />, document.getElementById('app')!);
+  initLinks();
 
   onBackButton(handleBackButton);
   onArchiveChange(() => scheduleAutoBackup());
